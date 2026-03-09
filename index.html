@@ -11,7 +11,7 @@
   --bg-primary: #0a0a0f;
   --bg-secondary: #101018;
   --bg-tertiary: #1a1a28;
-  --bg-panel: rgba(12,12,20,0.96);
+  --bg-panel: rgba(12, 12, 20, 0.96);
   --border: #252535;
   --text-1: #e0e0e8;
   --text-2: #8888a0;
@@ -24,7 +24,7 @@
   --font-d: 'Orbitron', sans-serif;
   --font-m: 'Share Tech Mono', monospace;
   --font-b: 'Rajdhani', sans-serif;
-  --header-h: 50px;
+  --header-h: 44px;
 }
 
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
@@ -38,22 +38,22 @@ html, body {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* HEADER */
+/* ========== HEADER ========== */
 header {
   position: fixed; top:0; left:0; right:0;
   height: var(--header-h);
   background: var(--bg-primary);
   border-bottom: 1px solid var(--border);
   display: flex; align-items: center; justify-content: space-between;
-  padding: 0 8px;
+  padding: 0 10px;
   z-index: 1000;
 }
 
 header h1 {
   font-family: var(--font-d);
-  font-size: clamp(16px, 5vw, 24px);
+  font-size: clamp(11px, 3vw, 17px);
   font-weight: 900;
-  letter-spacing: clamp(1px, 2vw, 4px);
+  letter-spacing: clamp(2px, 1vw, 6px);
   background: linear-gradient(90deg, var(--red), var(--orange), var(--yellow));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -61,33 +61,37 @@ header h1 {
 }
 
 .hdr-btns { display: flex; gap: 4px; }
+
 .hdr-btn {
   background: var(--bg-tertiary);
   border: 1px solid var(--border);
   color: var(--text-2);
   font-family: var(--font-m);
-  font-size: 12px;
-  padding: 6px 10px;
+  font-size: 10px;
+  padding: 5px 8px;
   cursor: pointer;
   transition: 0.2s;
   white-space: nowrap;
 }
 .hdr-btn:hover, .hdr-btn.on { border-color: var(--red); color: var(--text-1); }
 
-/* MAP */
+/* ========== LAYOUT — fixed positioning, no flex height bugs ========== */
 #map {
   position: fixed;
   top: var(--header-h);
-  left: 0; right: 0; bottom: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   z-index: 1;
+  background: #080810;
 }
 
-/* CROSSHAIR */
+/* Crosshair */
 #crosshair {
   position: fixed;
-  top: calc(var(--header-h) + 50%);
+  top: calc(var(--header-h) + (100vh - var(--header-h)) / 2);
   left: 50%;
-  width: 24px; height: 24px;
+  width: 30px; height: 30px;
   transform: translate(-50%, -50%);
   pointer-events: none;
   z-index: 400;
@@ -98,99 +102,205 @@ header h1 {
 #crosshair::before { width:1px; height:100%; left:50%; }
 #crosshair::after { height:1px; width:100%; top:50%; }
 
-/* COORDS BADGES */
-#coords, #det-badge {
-  position: fixed; background: var(--bg-panel); border: 1px solid var(--border);
-  padding: 4px 8px; font-family: var(--font-m); font-size: 11px;
-  z-index: 400; pointer-events: none;
+/* Coords badge */
+#coords {
+  position: fixed;
+  bottom: 8px; left: 8px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  padding: 4px 10px;
+  font-family: var(--font-m);
+  font-size: 10px;
+  color: var(--cyan);
+  z-index: 400;
+  pointer-events: none;
 }
-#coords { bottom: 8px; left: 8px; color: var(--cyan); }
-#det-badge { top: calc(var(--header-h) + 8px); left: 8px; color: var(--orange); }
 
-/* CONTROL PANEL — MOBILE BOTTOM SHEET */
+#det-badge {
+  position: fixed;
+  top: calc(var(--header-h) + 8px); left: 8px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  padding: 4px 10px;
+  font-family: var(--font-m);
+  font-size: 10px;
+  color: var(--orange);
+  z-index: 400;
+  pointer-events: none;
+}
+
+/* ========== CONTROL PANEL ========== */
 #panel {
-  position: fixed; bottom: 0; left: 0; right: 0;
-  height: 55vh; background: var(--bg-secondary);
-  border-top: 1px solid var(--border);
-  overflow-y: auto; overflow-x: hidden;
-  transition: transform 0.3s ease;
-  transform: translateY(100%);
+  position: fixed;
   z-index: 500;
+  background: var(--bg-secondary);
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#panel::-webkit-scrollbar { width: 3px; }
+#panel::-webkit-scrollbar-thumb { background: var(--border); }
+
+/* MOBILE: bottom sheet */
+#panel {
+  bottom: 0; left: 0; right: 0;
+  height: 60vh;
+  border-top: 1px solid var(--border);
+  transform: translateY(calc(100% - 52px));
 }
 #panel.open { transform: translateY(0); }
 
 .grab-bar {
-  display: flex; justify-content: center; padding: 8px 0;
-  cursor: pointer; position: sticky; top:0; background: var(--bg-secondary);
+  display: flex;
+  justify-content: center;
+  padding: 10px 0 6px;
+  cursor: pointer;
+  position: sticky;
+  top: 0;
+  background: var(--bg-secondary);
+  z-index: 10;
 }
 .grab-bar .bar { width: 36px; height: 4px; background: var(--text-3); border-radius: 2px; }
 
 /* DESKTOP: sidebar */
 @media (min-width: 800px) {
-  #map { right: 320px; }
-  #crosshair { left: calc((100vw - 320px)/2); }
+  #map { right: 340px; }
+  #crosshair { left: calc((100vw - 340px) / 2); }
   #panel {
-    top: var(--header-h); bottom:0; right:0; left:auto;
-    width: 320px; height:auto;
-    border-left:1px solid var(--border); border-top:none;
-    transform:none;
+    top: var(--header-h); bottom: 0;
+    left: auto; right: 0;
+    width: 340px; height: auto;
+    border-top: none;
+    border-left: 1px solid var(--border);
+    transform: none;
   }
   .grab-bar { display: none; }
 }
 
-/* PANEL ELEMENTS */
-.sec { padding: 12px 14px 10px; border-bottom: 1px solid var(--border); }
-.sec-t { font-family: var(--font-d); font-size:10px; font-weight:700; color:var(--text-3); letter-spacing:2px; margin-bottom:8px; text-transform:uppercase; }
+/* ========== PANEL SECTIONS ========== */
+.sec { padding: 14px 14px 10px; border-bottom: 1px solid var(--border); }
+.sec-t {
+  font-family: var(--font-d); font-size: 9px; font-weight: 700;
+  letter-spacing: 3px; color: var(--text-3); margin-bottom: 10px; text-transform: uppercase;
+}
 
-.type-tog { display: flex; gap: 4px; margin-bottom: 8px; }
-.type-btn { flex:1; padding:8px 4px; font-family: var(--font-d); font-size:10px; font-weight:700; letter-spacing:1.5px; text-align:center; cursor:pointer; background:var(--bg-tertiary); border:1px solid var(--border); transition:0.2s; }
+.type-tog { display: flex; gap: 4px; margin-bottom: 10px; }
+.type-btn {
+  flex:1; padding: 9px 4px;
+  background: var(--bg-tertiary); border: 1px solid var(--border);
+  color: var(--text-2); font-family: var(--font-d); font-size: 10px;
+  font-weight: 700; letter-spacing: 2px; cursor: pointer; transition: 0.2s; text-align: center;
+}
 .type-btn.on-n { background: rgba(255,50,50,0.12); border-color: var(--red); color: var(--red); }
 .type-btn.on-e { background: rgba(0,180,255,0.1); border-color: var(--cyan); color: var(--cyan); }
 
-.cg { margin-bottom: 10px; }
-.cg-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; }
-.cg-top span { font-size:11px; font-weight:500; color:var(--text-2); }
-.cg-top .v { font-family:var(--font-m); font-size:10px; color:var(--orange); }
+.cg { margin-bottom: 12px; }
+.cg-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 5px; }
+.cg-top span { font-size: 12px; font-weight: 500; color: var(--text-2); }
+.cg-top .v { font-family: var(--font-m); font-size: 11px; color: var(--orange); }
 
 input[type="range"] {
-  -webkit-appearance:none; width:100%; height:4px; background:var(--bg-primary); border:1px solid var(--border); cursor:pointer;
+  -webkit-appearance: none; width: 100%; height: 4px;
+  background: var(--bg-primary); border: 1px solid var(--border); outline: none; cursor: pointer;
 }
-input[type="range"]::-webkit-slider-thumb { -webkit-appearance:none; width:16px; height:16px; background:var(--red); border:2px solid var(--bg-primary); }
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 16px; height: 16px;
+  background: var(--red); border: 2px solid var(--bg-primary); border-radius: 0; cursor: pointer;
+}
+input[type="range"]::-moz-range-thumb {
+  width: 16px; height: 16px;
+  background: var(--red); border: 2px solid var(--bg-primary); border-radius: 0; cursor: pointer;
+}
 input[type="range"].emp-s::-webkit-slider-thumb { background: var(--cyan); }
-select { width:100%; padding:6px 8px; background:var(--bg-primary); border:1px solid var(--border); color:var(--text-1); font-family:var(--font-m); font-size:11px; }
+input[type="range"].emp-s::-moz-range-thumb { background: var(--cyan); }
 
-.act { width:100%; padding:10px; border:1px solid; font-family:var(--font-d); font-size:11px; font-weight:700; letter-spacing:2px; text-transform:uppercase; cursor:pointer; margin-bottom:6px; background:transparent; }
-.act-n { border-color:var(--red); color:var(--red); }
-.act-n:hover { background: rgba(255,30,30,0.2); }
-.act-e { border-color:var(--cyan); color:var(--cyan); }
-.act-e:hover { background: rgba(0,180,255,0.15); }
+select {
+  width: 100%; padding: 7px 8px;
+  background: var(--bg-primary); border: 1px solid var(--border);
+  color: var(--text-1); font-family: var(--font-m); font-size: 11px; cursor: pointer; outline: none;
+}
 
-/* LEGEND & TOOLTIP */
-.zl { display:flex; flex-direction:column; gap:4px; }
-.zi { display:flex; align-items:center; gap:6px; font-size:10px; }
-.zd { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
-.zn { color:var(--text-2); flex:1; }
-.zr { font-family:var(--font-m); font-size:9px; color:var(--text-3); }
+.act {
+  width: 100%; padding: 11px; border: 1px solid;
+  font-family: var(--font-d); font-size: 11px; font-weight: 700;
+  letter-spacing: 3px; cursor: pointer; transition: 0.25s;
+  margin-bottom: 6px; text-transform: uppercase; background: transparent;
+}
+.act-n { border-color: var(--red); color: var(--red); }
+.act-n:hover { background: rgba(255,30,30,0.2); box-shadow: 0 0 16px rgba(255,30,30,0.25); }
+.act-n:active { background: rgba(255,30,30,0.35); }
+.act-e { border-color: var(--cyan); color: var(--cyan); }
+.act-e:hover { background: rgba(0,180,255,0.15); box-shadow: 0 0 16px rgba(0,180,255,0.2); }
+.act-e:active { background: rgba(0,180,255,0.3); }
+.act-c { border-color: var(--border); color: var(--text-3); font-size: 9px; }
+.act-c:hover { border-color: var(--text-2); color: var(--text-2); }
 
-/* FLASH */
+.fx-panel { background: var(--bg-primary); border: 1px solid var(--border); padding: 10px; margin-top: 6px; }
+.fx-row { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid rgba(40,40,60,0.4); font-size: 11px; }
+.fx-row:last-child { border: none; }
+.fx-l { color: var(--text-3); font-weight: 500; }
+.fx-v { font-family: var(--font-m); font-size: 10px; color: var(--text-1); }
+.fx-v.d { color: var(--red); }
+.fx-v.w { color: var(--orange); }
+.fx-v.c { color: var(--yellow); }
+.fx-v.i { color: var(--cyan); }
+
+.zl { display: flex; flex-direction: column; gap: 3px; }
+.zi { display: flex; align-items: center; gap: 7px; font-size: 10px; }
+.zd { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+.zn { color: var(--text-2); flex: 1; }
+.zr { font-family: var(--font-m); font-size: 9px; color: var(--text-3); }
+
+.tg { display: flex; flex-direction: column; gap: 7px; }
+.tr { display: flex; align-items: center; justify-content: space-between; }
+.tr label { font-size: 11px; color: var(--text-2); cursor: pointer; }
+.ts {
+  position: relative; width: 34px; height: 17px;
+  background: var(--bg-primary); border: 1px solid var(--border);
+  cursor: pointer; transition: 0.3s; flex-shrink: 0;
+}
+.ts::after {
+  content:''; position:absolute; top:2px; left:2px;
+  width:11px; height:11px; background: var(--text-3); transition: 0.3s;
+}
+.ts.on { border-color: var(--cyan); background: rgba(0,180,255,0.12); }
+.ts.on::after { left: 19px; background: var(--cyan); }
+
 #flash { display:none; position:fixed; inset:0; z-index:1500; pointer-events:none; }
 #flash.go { display:block; animation: flashAnim 0.7s ease-out forwards; }
 @keyframes flashAnim { 0%{opacity:.85} 15%{opacity:.5} 100%{opacity:0} }
 
-/* MODAL */
-#info-modal { display:none; position:fixed; inset:0; background: rgba(0,0,0,0.8); z-index:2000; justify-content:center; align-items:center; padding:16px; backdrop-filter:blur(4px); }
+#info-modal {
+  display:none; position:fixed; inset:0;
+  background: rgba(0,0,0,0.8); z-index: 2000;
+  justify-content:center; align-items:center; padding: 20px;
+  backdrop-filter: blur(4px);
+}
 #info-modal.show { display:flex; }
-.modal { background: var(--bg-secondary); border:1px solid var(--border); max-width:500px; width:100%; max-height:80vh; overflow-y:auto; padding:20px; position:relative; }
-.modal h2 { font-family:var(--font-d); font-size:14px; color:var(--orange); margin-bottom:12px; }
-.modal h3 { font-family:var(--font-d); font-size:11px; color:var(--red); margin:10px 0 6px; }
-.modal p { font-size:13px; line-height:1.5; color:var(--text-2); margin-bottom:6px; }
-.modal-x { position:absolute; top:8px; right:10px; background:none; border:none; color:var(--text-3); font-size:18px; cursor:pointer; }
+.modal {
+  background: var(--bg-secondary); border: 1px solid var(--border);
+  max-width: 600px; width: 100%; max-height: 80vh; overflow-y:auto; padding: 24px; position:relative;
+}
+.modal h2 { font-family:var(--font-d); font-size:13px; letter-spacing:3px; color:var(--orange); margin-bottom:14px; }
+.modal h3 { font-family:var(--font-d); font-size:10px; letter-spacing:2px; color:var(--red); margin:14px 0 6px; }
+.modal p { font-size:13px; line-height:1.65; color:var(--text-2); margin-bottom:8px; }
+.modal-x { position:absolute; top:10px; right:14px; background:none; border:none; color:var(--text-3); font-size:18px; cursor:pointer; }
 
-/* LEAFLET */
 .leaflet-container { background: #080810 !important; }
 .leaflet-control-zoom a { background: var(--bg-secondary) !important; color: var(--text-1) !important; border-color: var(--border) !important; }
 .leaflet-control-attribution { display:none !important; }
+.leaflet-popup-content-wrapper { background: var(--bg-panel) !important; border: 1px solid var(--border) !important; border-radius:0 !important; color: var(--text-1) !important; font-family: var(--font-b) !important; }
+.leaflet-popup-tip { background: var(--bg-panel) !important; }
+.leaflet-popup-close-button { color: var(--text-3) !important; }
+.zt { background: var(--bg-panel) !important; border: 1px solid var(--border) !important; color: var(--text-1) !important; font-family: var(--font-m) !important; font-size: 10px !important; padding: 5px 8px !important; border-radius:0 !important; }
 
+body::after {
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:9999;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.025) 2px, rgba(0,0,0,0.025) 4px);
+}
 </style>
 </head>
 <body>
@@ -213,10 +323,638 @@ select { width:100%; padding:6px 8px; background:var(--bg-primary); border:1px s
 
 <div id="panel">
   <div class="grab-bar" onclick="document.getElementById('panel').classList.toggle('open')"><div class="bar"></div></div>
-  <!-- Panel content remains same -->
+
+  <div class="sec">
+    <div class="type-tog">
+      <button class="type-btn on-n" id="btn-nuke" onclick="setType('nuclear')">☢ NUCLEAR</button>
+      <button class="type-btn" id="btn-emp" onclick="setType('emp')">⚡ EMP</button>
+    </div>
+    <div id="c-nuke">
+      <div class="cg">
+        <div class="cg-top"><span>Yield</span><span class="v" id="v-yield">100 kt</span></div>
+        <input type="range" id="s-yield" min="0" max="100" value="30" oninput="uYield(this.value)">
+      </div>
+      <div class="cg">
+        <div class="cg-top"><span>Burst Type</span></div>
+        <select id="burst-type">
+          <option value="airburst">Airburst (optimal)</option>
+          <option value="ground">Ground Burst</option>
+        </select>
+      </div>
+      <button class="act act-n" onclick="detonate()">☢ DETONATE</button>
+    </div>
+    <div id="c-emp" style="display:none">
+      <div class="cg">
+        <div class="cg-top"><span>Burst Altitude</span><span class="v" id="v-alt">100 km</span></div>
+        <input type="range" class="emp-s" id="s-alt" min="10" max="500" value="100" oninput="document.getElementById('v-alt').textContent=this.value+' km'">
+      </div>
+      <div class="cg">
+        <div class="cg-top"><span>Yield (HEMP equiv)</span><span class="v" id="v-empy">1 Mt</span></div>
+        <input type="range" class="emp-s" id="s-empy" min="10" max="5000" value="1000" oninput="uEmpY(this.value)">
+      </div>
+      <div class="cg">
+        <div class="cg-top"><span>EMP Type</span></div>
+        <select id="emp-type">
+          <option value="nuclear">Nuclear EMP (HEMP)</option>
+          <option value="non-nuclear">Non-Nuclear EMP</option>
+          <option value="solar">Solar-Style Pulse (GMD)</option>
+        </select>
+      </div>
+      <button class="act act-e" onclick="pulseEMP()">⚡ PULSE</button>
+    </div>
+    <button class="act act-c" onclick="clearAll()">✕ CLEAR ALL</button>
+  </div>
+
+  <div class="sec">
+    <div class="sec-t">Environment</div>
+    <div class="cg">
+      <div class="cg-top"><span>Wind Direction</span><span class="v" id="v-wd">180°</span></div>
+      <input type="range" id="s-wd" min="0" max="359" value="180" oninput="uWind()">
+    </div>
+    <div class="cg">
+      <div class="cg-top"><span>Wind Speed</span><span class="v" id="v-ws">15 mph</span></div>
+      <input type="range" id="s-ws" min="0" max="100" value="15" oninput="uWind()">
+    </div>
+    <div class="cg">
+      <div class="cg-top"><span>Geomagnetic Latitude</span><span class="v" id="v-geo">45°</span></div>
+      <input type="range" class="emp-s" id="s-geo" min="-90" max="90" value="45" oninput="document.getElementById('v-geo').textContent=this.value+'°'">
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-t">Map Overlays</div>
+    <div class="tg">
+      <div class="tr"><label>Power Grid</label><div class="ts" onclick="togOv(this,'grid')"></div></div>
+      <div class="tr"><label>Submarine Cables</label><div class="ts" onclick="togOv(this,'cables')"></div></div>
+      <div class="tr"><label>Satellite Footprints</label><div class="ts" onclick="togOv(this,'sats')"></div></div>
+      <div class="tr"><label>Population Density</label><div class="ts" onclick="togOv(this,'pop')"></div></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-t" id="fx-title">Effects Summary</div>
+    <div id="fx-content">
+      <p style="color:var(--text-3);font-size:11px;font-style:italic">Tap the map to set a target, then press DETONATE or PULSE.</p>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-t">Zone Legend</div>
+    <div id="legend" class="zl"></div>
+  </div>
+</div>
+
+<div id="info-modal" onclick="if(event.target===this)hideInfo()">
+  <div class="modal">
+    <button class="modal-x" onclick="hideInfo()">✕</button>
+    <h2>ABOUT THIS SIMULATOR</h2>
+    <p>An educational tool visualizing approximate effects of nuclear detonations and EMP events. All calculations use publicly available physics models and declassified research.</p>
+    <h3>NUCLEAR BLAST PHYSICS</h3>
+    <p>Blast radii derive from cube-root scaling laws. Fireball: R = 0.033 × Y^0.4 km. Overpressure uses Glasstone & Dolan models ("The Effects of Nuclear Weapons", 1977). Thermal radiation follows inverse-square law. Casualties use zone area × population density with Hiroshima/Nagasaki survival rates.</p>
+    <h3>EMP PHYSICS</h3>
+    <p>HEMP has three phases: E1 (nanoseconds), E2 (microseconds–milliseconds), E3 (seconds–minutes). E1 peak ≈ 50 kV/m. Affected radius from burst altitude: R = √(2 × Rₑ × h). Field decays with distance, modulated by geomagnetic latitude.</p>
+    <h3>LIMITATIONS</h3>
+    <p>This is an approximation. Real effects depend on terrain, weather, construction, shielding, and weapon design. Population data is estimated. Not for actual emergency planning.</p>
+    <h3>HISTORICAL DATA</h3>
+    <p>Historical markers include known nuclear tests and EMP events. The 1962 Starfish Prime test (1.4 Mt at 400 km over Johnston Atoll) caused electrical damage in Hawaii 1,400 km away.</p>
+  </div>
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="simulator.js"></script> <!-- your JS engine -->
+<script>
+/* ============================================================
+   APOCALYPSE SIMULATOR — Engine
+   Physics-based nuclear & EMP simulation
+   ============================================================ */
+
+let map, simType = 'nuclear', dets = [], overlays = {}, histLayer = null, histOn = false;
+let clickMk = null, selLL = null;
+
+// ==================== INIT ====================
+function init() {
+  map = L.map('map', {
+    center: [38.9, -77.04],
+    zoom: 5,
+    zoomControl: true,
+    worldCopyJump: true,
+    attributionControl: false
+  });
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    maxZoom: 18, subdomains: 'abcd'
+  }).addTo(map);
+
+  // Critical: force Leaflet to measure its container correctly
+  setTimeout(() => map.invalidateSize(), 50);
+  setTimeout(() => map.invalidateSize(), 300);
+  setTimeout(() => map.invalidateSize(), 1000);
+  window.addEventListener('resize', () => { map.invalidateSize(); });
+  // Also invalidate when panel opens/closes (mobile)
+  new MutationObserver(() => {
+    setTimeout(() => map.invalidateSize(), 400);
+  }).observe(document.getElementById('panel'), { attributes: true, attributeFilter: ['class'] });
+
+  map.on('mousemove', e => {
+    document.getElementById('coords').textContent =
+      `LAT: ${e.latlng.lat.toFixed(3)} | LNG: ${e.latlng.lng.toFixed(3)}`;
+  });
+
+  map.on('click', e => {
+    selLL = e.latlng;
+    if (clickMk) map.removeLayer(clickMk);
+    clickMk = L.circleMarker(e.latlng, {
+      radius: 6, fillColor: simType === 'nuclear' ? '#ff3333' : '#00d4ff',
+      fillOpacity: 1, color: '#fff', weight: 1
+    }).addTo(map);
+    clickMk.bindTooltip(
+      `Target: ${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`,
+      { className: 'zt', sticky: false }
+    );
+    // Auto-open panel on mobile after target select
+    if (window.innerWidth < 800) {
+      document.getElementById('panel').classList.add('open');
+    }
+  });
+
+  updateLegend();
+  uYield(document.getElementById('s-yield').value);
+  loadURL();
+}
+
+// ==================== UI ====================
+function setType(t) {
+  simType = t;
+  document.getElementById('btn-nuke').className = 'type-btn' + (t === 'nuclear' ? ' on-n' : '');
+  document.getElementById('btn-emp').className = 'type-btn' + (t === 'emp' ? ' on-e' : '');
+  document.getElementById('c-nuke').style.display = t === 'nuclear' ? 'block' : 'none';
+  document.getElementById('c-emp').style.display = t === 'emp' ? 'block' : 'none';
+  updateLegend();
+  if (clickMk && selLL) clickMk.setStyle({ fillColor: t === 'nuclear' ? '#ff3333' : '#00d4ff' });
+}
+
+/** Log-scale slider: 0–100 maps to 1 kt–50 Mt */
+function uYield(v) {
+  const kt = Math.max(1, Math.round(Math.pow(10, v / 100 * Math.log10(50000))));
+  document.getElementById('v-yield').textContent = kt >= 1000 ? (kt/1000).toFixed(1)+' Mt' : kt+' kt';
+}
+function getKt() {
+  const v = parseFloat(document.getElementById('s-yield').value);
+  return Math.max(1, Math.round(Math.pow(10, v / 100 * Math.log10(50000))));
+}
+
+function uEmpY(v) {
+  document.getElementById('v-empy').textContent = v >= 1000 ? (v/1000).toFixed(1)+' Mt' : v+' kt';
+}
+
+function uWind() {
+  document.getElementById('v-wd').textContent = document.getElementById('s-wd').value + '°';
+  document.getElementById('v-ws').textContent = document.getElementById('s-ws').value + ' mph';
+  dets.forEach(d => {
+    if (d.type === 'nuclear' && d.fallout) {
+      map.removeLayer(d.fallout);
+      d.fallout = drawFallout(d.ll, d.kt, d.bt);
+    }
+  });
+}
+
+// ==================== NUCLEAR PHYSICS ====================
+/**
+ * Glasstone & Dolan scaling laws ("Effects of Nuclear Weapons", 1977)
+ * Most blast effects: R ∝ Y^(1/3) — cube-root scaling from 1 Mt reference
+ *
+ * Fireball: R = 0.033 × Y^0.4 km (empirical fit, Y in kt)
+ * 20 psi heavy blast: ~1.8 km @ 1 Mt — total destruction of reinforced concrete
+ * 5 psi moderate:     ~4.7 km @ 1 Mt — collapse of residential structures
+ * 2 psi light:        ~9.4 km @ 1 Mt — glass breakage, light structural damage
+ * 3rd-degree thermal: ~12 km @ 1 Mt  — scales ~Y^0.41 (more steeply than blast)
+ * 500 rem radiation:  ~2.3 km @ 1 Mt — atmospheric attenuation limits growth
+ */
+function nukeZones(kt) {
+  const c = Math.pow(kt / 1000, 1/3);
+  return {
+    fireball:   { r: 0.033 * Math.pow(kt, 0.4),                          lbl:'Fireball',              clr:'rgba(255,255,255,0.55)', brd:'#ffffff' },
+    heavyBlast: { r: 1.8 * c,                                            lbl:'Heavy Blast (20 psi)',  clr:'rgba(255,50,50,0.28)',   brd:'#ff3333' },
+    modBlast:   { r: 4.7 * c,                                            lbl:'Moderate Blast (5 psi)',clr:'rgba(255,140,0,0.20)',   brd:'#ff8c00' },
+    lightBlast: { r: 9.4 * c,                                            lbl:'Light Blast (2 psi)',   clr:'rgba(255,200,0,0.14)',   brd:'#ffc800' },
+    thermal:    { r: 12 * Math.pow(kt / 1000, 0.41),                     lbl:'Thermal (3rd° burns)', clr:'rgba(255,100,50,0.10)',  brd:'#ff6432' },
+    radiation:  { r: Math.min(2.3*Math.pow(kt/1000,0.19), 9.4*c*0.5),    lbl:'Radiation (500 rem)',   clr:'rgba(100,255,100,0.08)', brd:'#00ff88' }
+  };
+}
+
+/**
+ * Casualty estimation: zone area × avg urban pop density (5,000/km²)
+ * Fatality rates calibrated from Hiroshima/Nagasaki studies:
+ *   fireball zone: 100%  |  heavy blast (20 psi): 90%
+ *   moderate (5 psi): 50%  |  light (2 psi): 15%
+ * Real casualties depend on time of day, shelter, terrain, warning time
+ */
+function nukeEffects(z, kt, bt) {
+  const pd = 5000;
+  const a = k => Math.PI * z[k].r ** 2;
+  const dead = Math.round(
+    a('fireball') * pd * 1.0 +
+    (a('heavyBlast') - a('fireball')) * pd * 0.9 +
+    (a('modBlast') - a('heavyBlast')) * pd * 0.5 +
+    (a('lightBlast') - a('modBlast')) * pd * 0.15
+  );
+  const hurt = Math.round(
+    (a('modBlast') - a('heavyBlast')) * pd * 0.4 +
+    (a('lightBlast') - a('modBlast')) * pd * 0.45 +
+    (a('thermal') - a('lightBlast')) * pd * 0.2
+  );
+  return {
+    dead: fmtN(dead), hurt: fmtN(hurt),
+    affected: fmtN(Math.round(a('thermal') * pd)),
+    destroyed: Math.round(a('heavyBlast') * 100).toLocaleString() + ' km²',
+    fallout: bt === 'ground' ? 'SEVERE' : 'MODERATE',
+    fire: kt > 100 ? 'HIGH' : 'LOW',
+    radHaz: bt === 'ground' ? 'EXTREME' : 'SIGNIFICANT',
+    safe: (z.lightBlast.r * 1.5).toFixed(1) + ' km'
+  };
+}
+
+// ==================== EMP PHYSICS ====================
+/**
+ * HEMP line-of-sight geometry: R = √(2 × Rₑ × h)
+ *   Rₑ = 6371 km (Earth radius), h = burst altitude in km
+ *   This gives the geometric horizon — maximum ground radius of effect
+ *
+ * E1 peak field strength: ~50 kV/m reference (Starfish Prime, 1.4 Mt @ 400 km)
+ *   Scales with yield^0.33 and inversely with sqrt(altitude)
+ *   Field decays from sub-burst point to horizon
+ *
+ * Zone boundaries: fractions of LOS radius corresponding to field strength thresholds
+ *   Severe (>25 kV/m): 0.3 × R_LOS — total electronics failure
+ *   Moderate (10-25 kV/m): 0.6 × R_LOS — significant disruption
+ *   Minor (2-10 kV/m): 0.85 × R_LOS — some device failures
+ *   Minimal (<2 kV/m): R_LOS — edge effects at horizon
+ */
+function empZones(alt, kt, type) {
+  const Re = 6371;
+  if (type === 'nuclear') {
+    const los = Math.sqrt(2 * Re * alt);
+    const yf = Math.pow(kt / 1000, 0.33);
+    const pk = 50 * yf * Math.sqrt(400 / Math.max(alt, 30));
+    return {
+      severe:   { r: los*0.3,  lbl:'Severe (>25 kV/m)',     clr:'rgba(255,0,80,0.22)',  brd:'#ff0050', fld:pk.toFixed(1) },
+      moderate: { r: los*0.6,  lbl:'Moderate (10-25 kV/m)', clr:'rgba(255,120,0,0.16)', brd:'#ff7800', fld:(pk*0.4).toFixed(1) },
+      minor:    { r: los*0.85, lbl:'Minor (2-10 kV/m)',     clr:'rgba(255,200,0,0.10)', brd:'#ffc800', fld:(pk*0.15).toFixed(1) },
+      minimal:  { r: los,      lbl:'Minimal (<2 kV/m)',     clr:'rgba(0,180,255,0.06)', brd:'#00b4ff', fld:(pk*0.05).toFixed(1) }
+    };
+  } else if (type === 'non-nuclear') {
+    const b = 0.5 * Math.pow(kt / 10, 0.5);
+    return {
+      severe:   { r:b*0.3,  lbl:'Severe (>50 kV/m)',  clr:'rgba(255,0,80,0.25)', brd:'#ff0050', fld:'80+' },
+      moderate: { r:b*0.6,  lbl:'Moderate (20-50)',    clr:'rgba(255,120,0,0.18)',brd:'#ff7800', fld:'35' },
+      minor:    { r:b*0.85, lbl:'Minor (5-20 kV/m)',   clr:'rgba(255,200,0,0.12)',brd:'#ffc800', fld:'12' },
+      minimal:  { r:b,      lbl:'Minimal (<5 kV/m)',   clr:'rgba(0,180,255,0.06)',brd:'#00b4ff', fld:'3' }
+    };
+  } else {
+    const b = 2000 * Math.pow(kt / 1000, 0.25);
+    return {
+      severe:   { r:b*0.2, lbl:'Severe Grid Damage',  clr:'rgba(255,0,80,0.18)',  brd:'#ff0050', fld:'N/A' },
+      moderate: { r:b*0.5, lbl:'Moderate Grid Stress', clr:'rgba(255,120,0,0.13)', brd:'#ff7800', fld:'N/A' },
+      minor:    { r:b*0.8, lbl:'Minor Fluctuations',   clr:'rgba(255,200,0,0.08)', brd:'#ffc800', fld:'N/A' },
+      minimal:  { r:b,     lbl:'GIC Monitoring Zone',  clr:'rgba(0,180,255,0.05)', brd:'#00b4ff', fld:'N/A' }
+    };
+  }
+}
+
+/**
+ * EMP infrastructure effects estimation
+ * Transformer density: ~350 HV transformers per 1M km² (US average)
+ * Cell tower density: ~20 per 1000 km² in developed areas
+ * Vehicle EMP vulnerability: depends on field strength vs ECU shielding
+ */
+function empEffects(z, alt, kt, type) {
+  const sA = Math.PI * z.severe.r ** 2;
+  const mA = Math.PI * z.moderate.r ** 2;
+  const tA = Math.PI * z.minimal.r ** 2;
+  const txDmg = Math.round(sA * (350/1e6) * 0.7);
+  const cellT = Math.round(mA * 0.02);
+  const cellOut = Math.min(95, Math.round((sA / tA) * 100 + 30));
+  const pf = parseFloat(z.severe.fld);
+  const vf = z.severe.fld === 'N/A' ? 'Variable' : pf > 25 ? '60-80%' : pf > 10 ? '20-40%' : '5-15%';
+  return {
+    peak: z.severe.fld + ' kV/m', txDmg: txDmg.toLocaleString(),
+    cellT: cellT.toLocaleString(), cellOut: cellOut + '%',
+    vf, gps: alt > 100 ? 'SEVERE' : 'MODERATE',
+    sat: alt > 300 ? 'DISRUPTED' : 'DEGRADED',
+    recov: txDmg > 50 ? '4-10 years' : txDmg > 10 ? '6-18 months' : '1-6 months',
+    area: fmtArea(tA)
+  };
+}
+
+// ==================== DRAWING ====================
+function detonate() {
+  if (!selLL) return alert('Tap the map to select a target first.');
+  const kt = getKt(), bt = document.getElementById('burst-type').value;
+  const z = nukeZones(kt), fx = nukeEffects(z, kt, bt);
+  flash();
+
+  const layers = [];
+  ['radiation','thermal','lightBlast','modBlast','heavyBlast','fireball'].forEach(k => {
+    const zn = z[k];
+    const c = L.circle(selLL, {
+      radius: zn.r * 1000, fillColor: zn.clr, fillOpacity: 0.6,
+      color: zn.brd, weight: 1.5, opacity: 0.7,
+      dashArray: k === 'radiation' ? '5,5' : null
+    }).addTo(map);
+    const mi = (zn.r * 0.621371).toFixed(1);
+    c.bindTooltip(`${zn.lbl}<br>${zn.r.toFixed(2)} km / ${mi} mi`, { className:'zt', sticky:true });
+    layers.push(c);
+  });
+
+  let fallout = null;
+  if (bt === 'ground') fallout = drawFallout(selLL, kt, bt);
+
+  const gz = L.circleMarker(selLL, { radius:4, fillColor:'#fff', fillOpacity:1, color:'#ff3333', weight:2 }).addTo(map);
+  const yStr = kt >= 1000 ? (kt/1000).toFixed(1)+' Mt' : kt+' kt';
+  gz.bindPopup(popNuke(selLL, yStr, bt, fx));
+  layers.push(gz);
+
+  const d = { type:'nuclear', ll:selLL, kt, bt, z, fx, layers, fallout };
+  dets.push(d);
+  updCount(); showFx(d); updateLegend(z, null);
+  if (clickMk) { map.removeLayer(clickMk); clickMk = null; }
+  selLL = null;
+  // Collapse panel on mobile so user can see result
+  if (window.innerWidth < 800) document.getElementById('panel').classList.remove('open');
+}
+
+function pulseEMP() {
+  if (!selLL) return alert('Tap the map to select a burst point first.');
+  const alt = +document.getElementById('s-alt').value;
+  const kt = +document.getElementById('s-empy').value;
+  const et = document.getElementById('emp-type').value;
+  const z = empZones(alt, kt, et), fx = empEffects(z, alt, kt, et);
+  flash('emp');
+
+  const layers = [];
+  ['minimal','minor','moderate','severe'].forEach(k => {
+    const zn = z[k];
+    const c = L.circle(selLL, {
+      radius: zn.r * 1000, fillColor: zn.clr, fillOpacity: 0.5,
+      color: zn.brd, weight: 1.5, opacity: 0.6, dashArray: '4,4'
+    }).addTo(map);
+    const mi = (zn.r * 0.621371).toFixed(1);
+    c.bindTooltip(`${zn.lbl}<br>${zn.r.toFixed(1)} km / ${mi} mi | ${zn.fld} kV/m`, { className:'zt', sticky:true });
+    layers.push(c);
+  });
+
+  const mk = L.circleMarker(selLL, { radius:5, fillColor:'#00d4ff', fillOpacity:1, color:'#fff', weight:1 }).addTo(map);
+  mk.bindPopup(popEmp(selLL, alt, kt, et, fx));
+  layers.push(mk);
+
+  const d = { type:'emp', ll:selLL, alt, kt, et, z, fx, layers };
+  dets.push(d);
+  updCount(); showFx(d); updateLegend(null, z);
+  if (clickMk) { map.removeLayer(clickMk); clickMk = null; }
+  selLL = null;
+  if (window.innerWidth < 800) document.getElementById('panel').classList.remove('open');
+}
+
+/** Fallout plume: elongated polygon carried downwind from ground-burst detonation */
+function drawFallout(ll, kt, bt) {
+  if (bt !== 'ground') return null;
+  const wd = +document.getElementById('s-wd').value;
+  const ws = +document.getElementById('s-ws').value;
+  const pLen = Math.pow(kt, 0.4) * (ws / 15) * 5; // plume length in km
+  const pWid = pLen * 0.2; // width ≈ 1/5 of length
+  // Wind blows FROM direction, so fallout goes +180°
+  const dir = ((wd + 180) % 360) * Math.PI / 180;
+  const pts = [], N = 20;
+  for (let i = 0; i <= N; i++) {
+    const t = i / N, dist = pLen * t;
+    const w = pWid * Math.sin(Math.PI * t) * (1 - t * 0.3);
+    const perp = dir + Math.PI / 2;
+    const cLat = ll.lat + (dist * Math.cos(dir)) / 111.32;
+    const cLng = ll.lng + (dist * Math.sin(dir)) / (111.32 * Math.cos(ll.lat * Math.PI / 180));
+    const lLat = cLat + (w * Math.cos(perp)) / 111.32;
+    const lLng = cLng + (w * Math.sin(perp)) / (111.32 * Math.cos(ll.lat * Math.PI / 180));
+    const rLat = cLat - (w * Math.cos(perp)) / 111.32;
+    const rLng = cLng - (w * Math.sin(perp)) / (111.32 * Math.cos(ll.lat * Math.PI / 180));
+    pts.push([lLat, lLng]);
+    pts.unshift([rLat, rLng]);
+  }
+  const poly = L.polygon(pts, {
+    fillColor: '#88ff00', fillOpacity: 0.12,
+    color: '#88ff00', weight: 1, opacity: 0.3, dashArray: '3,3'
+  }).addTo(map);
+  poly.bindTooltip('Fallout Plume', { className:'zt', sticky:true });
+  return poly;
+}
+
+// ==================== POPUPS ====================
+function popNuke(ll, yStr, bt, fx) {
+  return `<div style="font-family:var(--font-b);min-width:170px">
+    <div style="font-family:var(--font-d);font-size:11px;color:#ff3333;letter-spacing:2px;margin-bottom:5px">☢ NUCLEAR</div>
+    <div style="font-size:11px;color:#8888a0"><b style="color:#e0e0e8">Yield:</b> ${yStr} · <b style="color:#e0e0e8">${bt}</b><br><b style="color:#e0e0e8">Loc:</b> ${ll.lat.toFixed(4)}°, ${ll.lng.toFixed(4)}°</div>
+    <hr style="border:none;border-top:1px solid #252535;margin:5px 0">
+    <div style="font-size:10px;color:#8888a0;line-height:1.55">Fatalities: <span style="color:#ff3333">${fx.dead}</span><br>Injuries: <span style="color:#ff8800">${fx.hurt}</span><br>Total: <span style="color:#ffc800">${fx.affected}</span><br>Fallout: <span style="color:${fx.fallout==='SEVERE'?'#ff3333':'#ff8800'}">${fx.fallout}</span></div></div>`;
+}
+function popEmp(ll, alt, kt, et, fx) {
+  const yStr = kt >= 1000 ? (kt/1000).toFixed(1)+' Mt' : kt+' kt';
+  return `<div style="font-family:var(--font-b);min-width:170px">
+    <div style="font-family:var(--font-d);font-size:11px;color:#00d4ff;letter-spacing:2px;margin-bottom:5px">⚡ EMP</div>
+    <div style="font-size:11px;color:#8888a0"><b style="color:#e0e0e8">Alt:</b> ${alt} km · <b style="color:#e0e0e8">Yield:</b> ${yStr}<br><b style="color:#e0e0e8">Type:</b> ${et} · <b style="color:#e0e0e8">Peak:</b> ${fx.peak}</div>
+    <hr style="border:none;border-top:1px solid #252535;margin:5px 0">
+    <div style="font-size:10px;color:#8888a0;line-height:1.55">Transformers: <span style="color:#ff3333">${fx.txDmg}</span><br>Cell Towers: <span style="color:#ff8800">${fx.cellT}</span><br>Vehicles: <span style="color:#ffc800">${fx.vf}</span><br>Recovery: <span style="color:#ff3333">${fx.recov}</span></div></div>`;
+}
+
+// ==================== EFFECTS PANEL ====================
+function showFx(d) {
+  const el = document.getElementById('fx-content');
+  if (d.type === 'nuclear') {
+    const e = d.fx;
+    document.getElementById('fx-title').textContent = '☢ Nuclear Effects';
+    el.innerHTML = `<div class="fx-panel">
+      <div class="fx-row"><span class="fx-l">Est. Fatalities</span><span class="fx-v d">${e.dead}</span></div>
+      <div class="fx-row"><span class="fx-l">Est. Injuries</span><span class="fx-v w">${e.hurt}</span></div>
+      <div class="fx-row"><span class="fx-l">Total Affected</span><span class="fx-v c">${e.affected}</span></div>
+      <div class="fx-row"><span class="fx-l">Area Destroyed</span><span class="fx-v d">${e.destroyed}</span></div>
+      <div class="fx-row"><span class="fx-l">Fallout Risk</span><span class="fx-v ${e.fallout==='SEVERE'?'d':'w'}">${e.fallout}</span></div>
+      <div class="fx-row"><span class="fx-l">Firestorm Risk</span><span class="fx-v ${e.fire==='HIGH'?'d':'i'}">${e.fire}</span></div>
+      <div class="fx-row"><span class="fx-l">Radiation Hazard</span><span class="fx-v d">${e.radHaz}</span></div>
+      <div class="fx-row"><span class="fx-l">Safe Distance</span><span class="fx-v i">${e.safe}</span></div>
+    </div><p style="margin-top:8px;font-size:9px;color:var(--text-3);font-style:italic">* Assumes urban density ~5,000/km². Varies with location and shelter.</p>`;
+  } else {
+    const e = d.fx;
+    document.getElementById('fx-title').textContent = '⚡ EMP Effects';
+    el.innerHTML = `<div class="fx-panel">
+      <div class="fx-row"><span class="fx-l">Peak E1 Field</span><span class="fx-v d">${e.peak}</span></div>
+      <div class="fx-row"><span class="fx-l">Transformers Damaged</span><span class="fx-v d">${e.txDmg}</span></div>
+      <div class="fx-row"><span class="fx-l">Cell Towers Affected</span><span class="fx-v w">${e.cellT}</span></div>
+      <div class="fx-row"><span class="fx-l">Cell Outage</span><span class="fx-v w">${e.cellOut}</span></div>
+      <div class="fx-row"><span class="fx-l">Vehicle Failure</span><span class="fx-v c">${e.vf}</span></div>
+      <div class="fx-row"><span class="fx-l">GPS Disruption</span><span class="fx-v i">${e.gps}</span></div>
+      <div class="fx-row"><span class="fx-l">Satellite Comms</span><span class="fx-v w">${e.sat}</span></div>
+      <div class="fx-row"><span class="fx-l">Recovery Time</span><span class="fx-v d">${e.recov}</span></div>
+      <div class="fx-row"><span class="fx-l">Affected Area</span><span class="fx-v i">${e.area}</span></div>
+    </div><p style="margin-top:8px;font-size:9px;color:var(--text-3);font-style:italic">* Depends on shielding, grid hardening, equipment type.</p>`;
+  }
+}
+
+function updateLegend(nz, ez) {
+  const el = document.getElementById('legend');
+  if (simType === 'nuclear') {
+    const items = [
+      { c:'#ffffff', n:'Fireball', k:'fireball' },
+      { c:'#ff3333', n:'Heavy Blast (20 psi)', k:'heavyBlast' },
+      { c:'#ff8c00', n:'Moderate (5 psi)', k:'modBlast' },
+      { c:'#ffc800', n:'Light Blast (2 psi)', k:'lightBlast' },
+      { c:'#ff6432', n:'Thermal (3rd°)', k:'thermal' },
+      { c:'#00ff88', n:'Radiation (500 rem)', k:'radiation' }
+    ];
+    el.innerHTML = items.map(i => {
+      const d = nz ? nz[i.k].r.toFixed(2)+' km' : '—';
+      return `<div class="zi"><div class="zd" style="background:${i.c}"></div><span class="zn">${i.n}</span><span class="zr">${d}</span></div>`;
+    }).join('');
+  } else {
+    const items = [
+      { c:'#ff0050', n:'Severe Failure', k:'severe' },
+      { c:'#ff7800', n:'Moderate Disruption', k:'moderate' },
+      { c:'#ffc800', n:'Minor Glitches', k:'minor' },
+      { c:'#00b4ff', n:'Minimal Effects', k:'minimal' }
+    ];
+    el.innerHTML = items.map(i => {
+      const d = ez ? ez[i.k].r.toFixed(1)+' km' : '—';
+      return `<div class="zi"><div class="zd" style="background:${i.c}"></div><span class="zn">${i.n}</span><span class="zr">${d}</span></div>`;
+    }).join('');
+  }
+}
+
+// ==================== OVERLAYS ====================
+function togOv(el, type) {
+  el.classList.toggle('on');
+  if (overlays[type]) { map.removeLayer(overlays[type]); overlays[type] = null; }
+  if (el.classList.contains('on')) { overlays[type] = mkOverlay(type); overlays[type].addTo(map); }
+}
+
+function mkOverlay(type) {
+  const g = L.layerGroup();
+  if (type === 'grid') {
+    [[[48,-125],[47,-122],[46,-117],[44,-110],[42,-105],[41,-100],[40,-95],[40,-90],[41,-85],[40,-80],[39,-77],[40,-74]],
+     [[33,-118],[34,-112],[33,-106],[32,-100],[30,-95],[30,-90],[31,-85],[32,-82],[33,-80]],
+     [[50,-5],[50,0],[51,3],[52,6],[52,10],[53,13]],[[48,2],[47,6],[47,10],[48,12],[48,16]],
+     [[35,130],[35,135],[36,138],[36,140]]
+    ].forEach(l => L.polyline(l, { color:'#ffcc00', weight:1.5, opacity:0.4, dashArray:'6,4' }).addTo(g));
+    [[40,-74],[41,-87],[39,-77],[34,-118],[51,0],[48,2],[35,139]].forEach(p =>
+      L.circleMarker(p, { radius:3, fillColor:'#ffcc00', fillOpacity:0.6, color:'#ffcc00', weight:1 }).addTo(g));
+  }
+  if (type === 'cables') {
+    [[[40,-74],[42,-50],[48,-20],[51,-5]],[[34,-118],[25,-140],[20,-160],[22,145],[25,140],[30,135],[35,139]],
+     [[1,104],[5,80],[10,60],[15,45],[20,40],[30,32]],[[-34,18],[-35,25],[-30,40],[-20,58],[0,65],[10,72],[15,75]]
+    ].forEach(c => L.polyline(c, { color:'#00aaff', weight:1.5, opacity:0.35, dashArray:'8,4' }).addTo(g));
+  }
+  if (type === 'sats') {
+    [-135,-105,-75,-45,-15,15,45,75,105,135,165,-165].forEach(lng => {
+      L.circle([0,lng], { radius:2500000, fillColor:'#aa55ff', fillOpacity:0.04, color:'#aa55ff', weight:0.8, opacity:0.25, dashArray:'4,4' }).addTo(g);
+      L.circleMarker([0,lng], { radius:3, fillColor:'#aa55ff', fillOpacity:0.7, color:'#fff', weight:0.5 }).addTo(g);
+    });
+  }
+  if (type === 'pop') {
+    [[40.71,-74.01,8.3],[34.05,-118.24,4],[41.88,-87.63,2.7],[29.76,-95.37,2.3],[51.51,-0.13,9],[48.86,2.35,2.2],
+     [35.68,139.69,14],[31.23,121.47,24],[28.61,77.21,19],[19.08,72.88,21],[-23.55,-46.63,12],[19.43,-99.13,9],
+     [55.76,37.62,12],[39.9,116.4,21],[1.35,103.82,5.7],[-33.87,151.21,5.3]
+    ].forEach(([lat,lng,pop]) => {
+      L.circle([lat,lng], { radius:Math.sqrt(pop)*8000, fillColor:'#ff4400', fillOpacity:0.08+pop*0.005, color:'#ff4400', weight:0.5, opacity:0.2 }).addTo(g);
+    });
+  }
+  return g;
+}
+
+// ==================== HISTORICAL ====================
+function toggleHistorical() {
+  histOn = !histOn;
+  document.getElementById('btn-hist').classList.toggle('on', histOn);
+  if (histLayer) { map.removeLayer(histLayer); histLayer = null; }
+  if (!histOn) return;
+  histLayer = L.layerGroup();
+  [
+    [36.94,-116.05,'Trinity Test','Jul 16 1945','21 kt','n'],
+    [34.39,132.45,'Hiroshima','Aug 6 1945','15 kt','n'],
+    [32.77,129.87,'Nagasaki','Aug 9 1945','21 kt','n'],
+    [11.53,165.40,'Castle Bravo','Mar 1 1954','15 Mt','n'],
+    [73.48,54.58,'Tsar Bomba','Oct 30 1961','50 Mt','n'],
+    [16.74,-169.53,'Starfish Prime','Jul 9 1962','1.4 Mt @ 400km','e'],
+    [37.11,-116.05,'Nevada Test Site','1951-1992','928 tests','n'],
+    [-21.83,-138.93,'French Polynesia','1966-1996','Various','n'],
+    [41.57,78.43,'Lop Nur (China)','1964-1996','Various','n'],
+    [61.00,129.00,'K-3 Soviet HEMP','Oct 22 1962','300 kt @ 290km','e']
+  ].forEach(([lat,lng,name,date,yld,t]) => {
+    const clr = t === 'n' ? '#ff6600' : '#00d4ff';
+    const ic = L.divIcon({ className:'', html:`<div style="width:10px;height:10px;border:2px solid ${clr};border-radius:50%;background:${clr}33"></div>`, iconSize:[10,10], iconAnchor:[5,5] });
+    L.marker([lat,lng],{icon:ic}).addTo(histLayer).bindPopup(
+      `<div style="font-family:var(--font-b)"><div style="font-family:var(--font-d);font-size:10px;color:${clr};letter-spacing:1px">${t==='n'?'☢':'⚡'} ${name.toUpperCase()}</div><div style="font-size:10px;color:#8888a0;margin-top:3px">${date}<br>${yld}</div></div>`
+    );
+  });
+  histLayer.addTo(map);
+}
+
+// ==================== UTILS ====================
+function fmtN(n) { return n >= 1e6 ? (n/1e6).toFixed(1)+'M' : n >= 1e3 ? (n/1e3).toFixed(1)+'K' : n.toLocaleString(); }
+function fmtArea(a) { return a >= 1e6 ? (a/1e6).toFixed(1)+'M km²' : Math.round(a).toLocaleString()+' km²'; }
+
+function flash(type) {
+  const el = document.getElementById('flash');
+  el.style.background = type === 'emp' ? 'rgba(0,180,255,0.45)' : 'rgba(255,255,255,0.85)';
+  el.classList.remove('go'); void el.offsetWidth; el.classList.add('go');
+  setTimeout(() => el.classList.remove('go'), 800);
+}
+
+function clearAll() {
+  dets.forEach(d => { d.layers.forEach(l => map.removeLayer(l)); if (d.fallout) map.removeLayer(d.fallout); });
+  dets = [];
+  if (clickMk) { map.removeLayer(clickMk); clickMk = null; }
+  selLL = null; updCount();
+  document.getElementById('fx-content').innerHTML = '<p style="color:var(--text-3);font-size:11px;font-style:italic">Tap the map to set a target, then press DETONATE or PULSE.</p>';
+  updateLegend();
+}
+
+function updCount() { document.getElementById('det-badge').textContent = 'DETONATIONS: ' + dets.length; }
+
+// ==================== SHARE / URL ====================
+function shareSimulation() {
+  if (!dets.length) return alert('Place at least one simulation first.');
+  const p = dets.map((d,i) => {
+    if (d.type === 'nuclear') return `d${i}=nuke,${d.ll.lat.toFixed(4)},${d.ll.lng.toFixed(4)},${d.kt},${d.bt}`;
+    return `d${i}=emp,${d.ll.lat.toFixed(4)},${d.ll.lng.toFixed(4)},${d.alt},${d.kt},${d.et}`;
+  }).join('&');
+  const url = location.origin + location.pathname + '?' + p;
+  if (navigator.clipboard) navigator.clipboard.writeText(url).then(() => alert('URL copied!\n\n'+url)).catch(() => prompt('Copy:',url));
+  else prompt('Copy:',url);
+}
+
+function loadURL() {
+  const p = new URLSearchParams(location.search);
+  let i = 0;
+  while (p.has(`d${i}`)) {
+    const s = p.get(`d${i}`).split(',');
+    if (s[0] === 'nuke') {
+      selLL = L.latLng(+s[1],+s[2]);
+      document.getElementById('s-yield').value = ktSlider(+s[3]);
+      uYield(document.getElementById('s-yield').value);
+      document.getElementById('burst-type').value = s[4]||'airburst';
+      setType('nuclear'); detonate();
+    } else if (s[0] === 'emp') {
+      selLL = L.latLng(+s[1],+s[2]);
+      document.getElementById('s-alt').value = +s[3];
+      document.getElementById('v-alt').textContent = s[3]+' km';
+      document.getElementById('s-empy').value = +s[4]; uEmpY(s[4]);
+      document.getElementById('emp-type').value = s[5]||'nuclear';
+      setType('emp'); pulseEMP();
+    }
+    i++;
+  }
+}
+function ktSlider(kt) { return Math.round(Math.log10(Math.max(1,kt))/Math.log10(50000)*100); }
+
+function showInfo() { document.getElementById('info-modal').classList.add('show'); }
+function hideInfo() { document.getElementById('info-modal').classList.remove('show'); }
+
+// ==================== BOOT ====================
+window.addEventListener('DOMContentLoaded', init);
+</script>
 </body>
 </html>
